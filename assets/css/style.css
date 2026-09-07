@@ -1,0 +1,367 @@
+/* ==========================================================================
+   SkillBridge.lk — Language Notification Page
+   Design tokens
+   ========================================================================== */
+:root{
+  --bg:            #06070C;
+  --bg-2:          #0B0D16;
+  --glass:         rgba(255,255,255,0.055);
+  --glass-strong:  rgba(255,255,255,0.09);
+  --glass-border:  rgba(255,255,255,0.14);
+  --glass-border-hi: rgba(255,255,255,0.28);
+
+  --violet:  #7C5CFC;
+  --violet-soft: #A78BFA;
+  --cyan:    #00D4FF;
+  --magenta: #FF3D9A;
+
+  --text:    #F3F4F8;
+  --muted:   #9096AC;
+  --muted-2: #6B7086;
+
+  --radius-lg: 28px;
+  --radius-md: 20px;
+  --radius-sm: 14px;
+
+  --ease: cubic-bezier(.22,1,.36,1);
+}
+
+*{ box-sizing: border-box; }
+
+html,body{
+  height:100%;
+  margin:0;
+}
+
+body{
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, sans-serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+}
+
+::selection{ background: var(--violet); color:#fff; }
+
+/* ==========================================================================
+   Ambient 3D scene — layered blurred orbs + drifting mesh
+   ========================================================================== */
+.scene{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  overflow:hidden;
+  background:
+    radial-gradient(120% 90% at 50% -10%, #0F1120 0%, var(--bg) 55%),
+    var(--bg);
+  perspective: 1200px;
+}
+
+.orb{
+  position:absolute;
+  border-radius:50%;
+  filter: blur(90px);
+  opacity:0.55;
+  will-change: transform;
+}
+.orb-violet{
+  width:46vw; height:46vw;
+  top:-12vw; left:-10vw;
+  background: radial-gradient(circle at 30% 30%, var(--violet), transparent 70%);
+  animation: drift1 22s ease-in-out infinite;
+}
+.orb-cyan{
+  width:38vw; height:38vw;
+  bottom:-14vw; right:-8vw;
+  background: radial-gradient(circle at 60% 40%, var(--cyan), transparent 70%);
+  animation: drift2 26s ease-in-out infinite;
+}
+.orb-magenta{
+  width:30vw; height:30vw;
+  bottom:8vw; left:8vw;
+  background: radial-gradient(circle at 50% 50%, var(--magenta), transparent 70%);
+  opacity:0.35;
+  animation: drift3 30s ease-in-out infinite;
+}
+
+@keyframes drift1{
+  0%,100%{ transform: translate3d(0,0,0) scale(1); }
+  50%{ transform: translate3d(4vw, 3vw, 0) scale(1.08); }
+}
+@keyframes drift2{
+  0%,100%{ transform: translate3d(0,0,0) scale(1); }
+  50%{ transform: translate3d(-3vw, -4vw, 0) scale(1.1); }
+}
+@keyframes drift3{
+  0%,100%{ transform: translate3d(0,0,0) scale(1); }
+  50%{ transform: translate3d(2vw, -2vw, 0) scale(1.06); }
+}
+
+.grid-floor{
+  position:absolute;
+  left:-20%; right:-20%; bottom:-10%;
+  height:55%;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+  transform: rotateX(62deg);
+  transform-origin: bottom;
+  mask-image: linear-gradient(to top, rgba(0,0,0,0.9), transparent 85%);
+  -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0.9), transparent 85%);
+  opacity:0.5;
+}
+
+.mesh{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+}
+.mesh-lines path{
+  stroke-dasharray: 6 10;
+  animation: dash 40s linear infinite;
+}
+@keyframes dash{
+  to{ stroke-dashoffset: -600; }
+}
+.mesh-nodes circle{
+  animation: pulse 3.4s ease-in-out infinite;
+}
+.mesh-nodes circle:nth-child(2){ animation-delay: .6s; }
+.mesh-nodes circle:nth-child(3){ animation-delay: 1.2s; }
+.mesh-nodes circle:nth-child(4){ animation-delay: 1.8s; }
+.mesh-nodes circle:nth-child(5){ animation-delay: 2.2s; }
+.mesh-nodes circle:nth-child(6){ animation-delay: 2.8s; }
+@keyframes pulse{
+  0%,100%{ opacity:.35; r:2.4px; }
+  50%{ opacity:.9; r:4px; }
+}
+
+/* ==========================================================================
+   Brand
+   ========================================================================== */
+.brand{
+  position:relative;
+  z-index:2;
+  padding: 32px clamp(20px, 6vw, 64px) 0;
+}
+.brand-mark{
+  font-family:'Pirata One', 'Space Grotesk', serif;
+  font-weight:400;
+  font-size: 30px;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  text-shadow: 0 0 24px rgba(124,92,252,0.35);
+}
+.brand-accent{
+  background: linear-gradient(120deg, var(--violet-soft), var(--cyan));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.brand-tld{ color: var(--muted); font-weight:500; }
+
+/* ==========================================================================
+   Stage / modal layout
+   ========================================================================== */
+.stage{
+  position:relative;
+  z-index:2;
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 40px clamp(16px, 6vw, 64px);
+}
+
+.glass-modal{
+  position:relative;
+  width:100%;
+  max-width: 620px;
+  padding: clamp(28px, 4.5vw, 48px);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, var(--glass-strong), var(--glass));
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(28px) saturate(140%);
+  -webkit-backdrop-filter: blur(28px) saturate(140%);
+  box-shadow:
+    0 30px 80px -20px rgba(0,0,0,0.65),
+    inset 0 1px 0 rgba(255,255,255,0.14);
+  text-align:center;
+  animation: modalIn 900ms var(--ease) both;
+  transform-style: preserve-3d;
+}
+
+@keyframes modalIn{
+  0%{ opacity:0; transform: translateY(28px) scale(0.96) rotateX(6deg); }
+  100%{ opacity:1; transform: translateY(0) scale(1) rotateX(0deg); }
+}
+
+.modal-glow{
+  position:absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding:1px;
+  background: linear-gradient(120deg, rgba(124,92,252,0.55), rgba(0,212,255,0.35), rgba(255,61,154,0.45));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity:0.55;
+  pointer-events:none;
+}
+
+.eyebrow{
+  margin:0 0 10px;
+  font-family: 'Anton', 'Space Grotesk', sans-serif;
+  font-size:13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+  font-weight:400;
+}
+
+.modal-title{
+  margin: 0 0 14px;
+  font-family: 'Pirata One', 'Space Grotesk', serif;
+  font-weight: 400;
+  font-size: clamp(34px, 5.6vw, 52px);
+  line-height:1.15;
+  letter-spacing: 0.015em;
+  color: var(--text);
+  text-shadow: 0 0 30px rgba(0,212,255,0.25);
+}
+
+.modal-sub{
+  margin: 0 0 32px;
+  color: var(--muted);
+  font-size: 14.5px;
+  line-height:1.6;
+}
+
+/* ==========================================================================
+   Language cards — 3D tilt
+   ========================================================================== */
+.lang-grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 0 0 24px;
+  perspective: 800px;
+}
+
+.lang-card{
+  position:relative;
+  display:block;
+  appearance:none;
+  border:none;
+  cursor:pointer;
+  text-decoration:none;
+  padding: 26px 14px 20px;
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--glass-border);
+  color: var(--text);
+  transition: transform 420ms var(--ease), border-color 300ms ease, background 300ms ease, box-shadow 300ms ease;
+  transform-style: preserve-3d;
+  will-change: transform;
+  font-family: inherit;
+}
+
+.lang-card-inner{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+  transform: translateZ(24px);
+}
+
+.lang-native{
+  font-family:'Space Grotesk', sans-serif;
+  font-weight:600;
+  font-size: 22px;
+  line-height:1.2;
+}
+.lang-native--ta{ font-family:'Noto Sans Tamil','Space Grotesk',sans-serif; font-weight:600; }
+.lang-native--si{ font-family:'Noto Sans Sinhala','Space Grotesk',sans-serif; font-weight:600; }
+.lang-native--en{ font-family:'Anton','Space Grotesk',sans-serif; font-weight:400; letter-spacing:0.02em; }
+
+.lang-english{
+  font-family: 'Anton', 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.lang-arrow{
+  margin-top: 10px;
+  font-size: 15px;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: all 280ms var(--ease);
+  color: var(--cyan);
+}
+
+.lang-card:hover,
+.lang-card:focus-visible{
+  border-color: var(--glass-border-hi);
+  background: rgba(255,255,255,0.07);
+  box-shadow: 0 18px 40px -12px rgba(0,0,0,0.55);
+  outline: none;
+}
+.lang-card:hover .lang-arrow,
+.lang-card:focus-visible .lang-arrow{
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.lang-card[data-accent="magenta"]:hover{ box-shadow: 0 18px 40px -12px rgba(255,61,154,0.35); }
+.lang-card[data-accent="violet"]:hover{ box-shadow: 0 18px 40px -12px rgba(124,92,252,0.35); }
+.lang-card[data-accent="cyan"]:hover{ box-shadow: 0 18px 40px -12px rgba(0,212,255,0.35); }
+
+.lang-card:active{ transform: scale(0.97) !important; }
+
+.modal-footnote{
+  margin:0;
+  font-size:12.5px;
+  color: var(--muted-2);
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+.page-footer{
+  position:relative;
+  z-index:2;
+  text-align:center;
+  padding: 0 20px 28px;
+  font-family: 'Anton', 'Space Grotesk', sans-serif;
+  font-size:12px;
+  color: var(--muted-2);
+  letter-spacing:0.06em;
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+@media (max-width: 560px){
+  .lang-grid{ grid-template-columns: 1fr; }
+  .lang-card-inner{ flex-direction:row; justify-content:space-between; }
+  .lang-arrow{ margin-top:0; }
+  .brand{ padding-top:24px; }
+}
+
+/* ==========================================================================
+   Reduced motion
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce){
+  .orb, .mesh-lines path, .mesh-nodes circle, .glass-modal{
+    animation: none !important;
+  }
+  .lang-card{ transition: none; }
+}

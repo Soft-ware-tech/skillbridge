@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkillBridge.lk — Choose Your Language</title>
+<meta name="description" content="SkillBridge.lk — Sri Lanka's local freelancer marketplace. Select your language to continue.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Anton&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Noto+Sans+Tamil:wght@500;600;700&family=Noto+Sans+Sinhala:wght@500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- Ambient 3D background layer -->
+  <div class="scene" aria-hidden="true">
+    <div class="orb orb-violet"></div>
+    <div class="orb orb-cyan"></div>
+    <div class="orb orb-magenta"></div>
+    <div class="grid-floor"></div>
+    <svg class="mesh" viewBox="0 0 1200 800" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="meshLine" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#7C5CFC"/>
+          <stop offset="50%" stop-color="#00D4FF"/>
+          <stop offset="100%" stop-color="#FF3D9A"/>
+        </linearGradient>
+      </defs>
+      <g class="mesh-lines" stroke="url(#meshLine)" stroke-width="1" fill="none" opacity="0.35">
+        <path d="M 80 620 Q 400 300 700 480 T 1120 220"/>
+        <path d="M 40 200 Q 350 480 620 260 T 1160 560"/>
+        <path d="M 200 40 Q 500 240 780 60 T 1000 680"/>
+      </g>
+      <g class="mesh-nodes" fill="#EAF0FF" opacity="0.5">
+        <circle cx="80" cy="620" r="3"></circle>
+        <circle cx="700" cy="480" r="2.4"></circle>
+        <circle cx="1120" cy="220" r="3"></circle>
+        <circle cx="620" cy="260" r="2.4"></circle>
+        <circle cx="1160" cy="560" r="3"></circle>
+        <circle cx="780" cy="60" r="2.4"></circle>
+      </g>
+    </svg>
+  </div>
+
+  <!-- Top wordmark -->
+  <header class="brand">
+    <span class="brand-mark">Skill<span class="brand-accent">Bridge</span><span class="brand-tld">.lk</span></span>
+  </header>
+
+  <!-- Language notification / modal -->
+  <main class="stage">
+    <section class="glass-modal" id="langModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+
+      <div class="modal-glow"></div>
+
+      <p class="eyebrow">Before you continue</p>
+      <h1 id="modalTitle" class="modal-title">Choose your language</h1>
+      <p class="modal-sub">தொடர உங்கள் மொழியைத் தேர்ந்தெடுக்கவும் · ඔබගේ භාෂාව තෝරන්න</p>
+
+      <div class="lang-grid" id="langGrid">
+
+        <a href="tamil/index(TAM).html" class="lang-card" data-tilt data-accent="magenta" data-lang="tamil">
+          <span class="lang-card-inner">
+            <span class="lang-native lang-native--ta">தமிழ்</span>
+            <span class="lang-english">Tamil</span>
+            <span class="lang-arrow">→</span>
+          </span>
+        </a>
+
+        <a href="english/index(ENG).html" class="lang-card" data-tilt data-accent="violet" data-lang="english">
+          <span class="lang-card-inner">
+            <span class="lang-native lang-native--en">English</span>
+            <span class="lang-english">English</span>
+            <span class="lang-arrow">→</span>
+          </span>
+        </a>
+
+        <a href="sinhala/index(SIN).html" class="lang-card" data-tilt data-accent="cyan" data-lang="sinhala">
+          <span class="lang-card-inner">
+            <span class="lang-native lang-native--si">සිංහල</span>
+            <span class="lang-english">Sinhala</span>
+            <span class="lang-arrow">→</span>
+          </span>
+        </a>
+
+      </div>
+
+      <p class="modal-footnote">You can switch languages anytime from the menu.</p>
+    </section>
+  </main>
+
+  <footer class="page-footer">
+    <span>Sri Lanka's local freelancer marketplace</span>
+  </footer>
+
+  <script src="assets/js/language-select.js"></script>
+</body>
+</html>
