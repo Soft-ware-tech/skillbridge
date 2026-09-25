@@ -1,13 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — Freelancer Verification Queue (Admin, English)
- * ---------------------------------------------------------------------
- * Every freelancer profile with verified_badge = 0, oldest first.
- * "அங்கீகரி" posts to admin-verification-update.php. There's no separate
- * "rejected" state in the schema — a profile just stays unverified
- * until an admin approves it, so there's nothing destructive to undo.
- * ---------------------------------------------------------------------
- */
 require_once __DIR__ . '/session.php';
 require_login('admin');
 

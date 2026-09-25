@@ -1,18 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — Language selector handler
- * ---------------------------------------------------------------------
- * Receives the language chosen on the notification page (index.html),
- * stores it in the session so every subsequent page (PHP pages inside
- * /tamil, /english, /sinhala) can read $_SESSION['language'], and
- * redirects the visitor into that folder's own landing page.
- *
- * Shared DB note: all three language folders talk to the SAME database.
- * Only the UI text/templates differ per folder — the session value is
- * what tells shared/config files which language strings to load.
- * ---------------------------------------------------------------------
- */
-
 session_start();
 
 // Figure out the folder this script lives in on the URL (e.g. "/skillbridge"

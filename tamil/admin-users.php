@@ -1,11 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — User Management (Admin, English)
- * ---------------------------------------------------------------------
- * Every user on the platform, filterable by role, searchable by name/
- * email. Toggle-active posts to admin-user-toggle.php.
- * ---------------------------------------------------------------------
- */
 require_once __DIR__ . '/session.php';
 require_login('admin');
 

@@ -1,7 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — Admin: All Refund Requests (English)
- */
 require_once __DIR__ . '/session.php';
 require_login('admin');
 

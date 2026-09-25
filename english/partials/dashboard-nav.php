@@ -1,15 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — Dashboard nav partial (English)
- * ---------------------------------------------------------------------
- * Included by every logged-in-area page (freelancer dashboard/services/
- * bookings/profile-edit, client-dashboard.php, admin-*.php). Assumes
- * session.php + require_login() already ran in the including page.
- * Renders different links depending on $_SESSION['role']. Highlights
- * the current page via the $activeNav variable the including page can
- * set before including this file.
- * ---------------------------------------------------------------------
- */
 require_once __DIR__ . '/../notifications-helper.php';
 
 $activeNav = $activeNav ?? '';

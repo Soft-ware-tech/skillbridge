@@ -1,7 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — Handles the refund-request.php form submission.
- */
 require_once __DIR__ . '/session.php';
 require_login('client');
 require_once __DIR__ . '/notifications-helper.php';

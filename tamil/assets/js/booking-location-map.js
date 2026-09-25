@@ -1,13 +1,3 @@
-/* ==========================================================================
-   SkillBridge.lk -- Client location map (bookings.php, freelancer side)
-   Leaflet.js + OpenStreetMap tiles -- free, no API key. Each booking row
-   that has a saved client location gets a "View Client Location" button;
-   clicking it reveals a small read-only map pinned at that booking's
-   latitude/longitude. Maps are only initialised the first time a row is
-   opened (lazy), since Leaflet can't measure a hidden (display:none) map
-   container correctly.
-   ========================================================================== */
-
 var DARK_TILE_URL_BOOKING = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
 var DARK_TILE_ATTRIBUTION_BOOKING =
   '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors ' +

@@ -1,13 +1,3 @@
-/* ==========================================================================
-   SkillBridge.lk -- English Landing Page interactions
-   - Scroll progress bar ("bridge" being crossed)
-   - Sticky nav: blurs + hides on scroll down, reappears on scroll up
-   - Reveal-on-scroll for sections/cards
-   - Animated stat counters when in view
-   - 3D tilt on hero float-cards and category cards
-   - Mobile nav + language pill menu toggles
-   - Team card glow border: flush size while "விவரங்களைக் காண்க" is open
-   ========================================================================== */
 const sidebar = document.getElementById("sidebar");
 const sidebarToggle = document.getElementById("sidebarToggle");
 const mobileBurger = document.getElementById("mobileBurger");

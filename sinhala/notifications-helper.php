@@ -1,9 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — Notification helpers
- * Include this AFTER session.php on any page that reads/writes notifications.
- */
-
 function create_notification(PDO $pdo, int $userId, string $type, string $message, ?int $relatedId = null): void
 {
     try {

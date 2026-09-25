@@ -1,12 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — /sinhala/review-process.php
- * ---------------------------------------------------------------------
- * Only the client who made the booking can review it, only once it's
- * 'completed', and only once — the reviews table also has a UNIQUE
- * constraint on booking_id as a second line of defense.
- * ---------------------------------------------------------------------
- */
 require_once __DIR__ . '/session.php';
 require_login('client');
 

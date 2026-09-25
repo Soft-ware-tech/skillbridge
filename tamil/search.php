@@ -1,13 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — Search / Browse Freelancers (English)
- * ---------------------------------------------------------------------
- * Every "ஃப்ரீலான்சரைத் தேடுங்கள்" link, category-carousel card, and nav item
- * on the landing page points here. Filters (category, keyword, verified
- * only, sort) all come through as GET params so results are shareable
- * /bookmarkable links, e.g. search.php?category=tutoring&sort=rating.
- * ---------------------------------------------------------------------
- */
 require_once __DIR__ . '/inc-category-labels.php';
 require_once __DIR__ . '/session.php'; // gives us session_start() + $pdo
 

@@ -1,14 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — /sinhala/booking-status-update.php
- * ---------------------------------------------------------------------
- * Lets a freelancer mark one of their bookings 'completed' or
- * 'cancelled'. Ownership is re-checked here (never trust the button
- * alone), and only a small set of transitions is allowed — a freelancer
- * can't jump a booking straight to 'confirmed' themselves, since that
- * status is set by a real payment (see payhere-notify.php).
- * ---------------------------------------------------------------------
- */
 require_once __DIR__ . '/session.php';
 require_login('freelancer');
 

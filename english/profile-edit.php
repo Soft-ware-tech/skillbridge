@@ -1,26 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — Edit Profile (English)
- * ---------------------------------------------------------------------
- * Available to every logged-in role (freelancer / client / admin):
- *   - Full name, phone, and profile photo live on `users` and are
- *     editable by anyone.
- *   - Bio, headline skill category, and pinpoint location live on
- *     `freelancer_profiles` and only render/save for freelancers.
- *     verified_badge is intentionally NOT editable here — only an
- *     admin can grant that.
- *
- * Profile photo: uploaded to assets/uploads/avatars/user_<id>.<ext>
- * and the relative path saved to users.photo_path.
- *
- * Location picker (freelancers only): a Leaflet map (OpenStreetMap
- * tiles — free, no API key/billing needed) to click/drag a pin on,
- * plus an address search box (OSM's free Nominatim geocoder).
- * assets/js/location-picker.js writes the chosen coordinates into the
- * hidden #latitude/#longitude inputs below, which is what actually
- * gets saved.
- * ---------------------------------------------------------------------
- */
 require_once __DIR__ . '/session.php';
 require_login();
 

@@ -1,12 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — /english/admin-user-toggle.php
- * ---------------------------------------------------------------------
- * Flips a user's is_active flag. Admin-only. An admin can't deactivate
- * their own account through this (avoids accidentally locking
- * themselves out).
- * ---------------------------------------------------------------------
- */
 require_once __DIR__ . '/session.php';
 require_login('admin');
 

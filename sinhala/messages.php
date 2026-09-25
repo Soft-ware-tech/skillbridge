@@ -1,13 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — Messages (English)
- * ---------------------------------------------------------------------
- * No ?with= param  -> inbox: list of everyone you've exchanged messages
- *                     with, most recent first.
- * ?with=<user_id>  -> open thread with that person; posting the form
- *                     sends a new message and reloads the thread.
- * ---------------------------------------------------------------------
- */
 require_once __DIR__ . '/session.php';
 require_login();
 

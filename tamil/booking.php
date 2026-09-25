@@ -1,18 +1,7 @@
 <?php
-/**
- * SkillBridge.lk — Booking (English)
- * ---------------------------------------------------------------------
- * Reached from a "இப்போது முன்பதிவு செய்யுங்கள்" button on profile.php via ?service=<id>.
- * Requires login — require_login() sends anonymous visitors to login.php
- * with a ?redirect= back to this exact URL, so they land right back
- * here after signing in.
- *
- * On submit: creates a `bookings` row with status='pending', then sends
- * the client on to payment.php to complete it.
- * ---------------------------------------------------------------------
- */
 require_once __DIR__ . '/session.php';
 require_login();
+require_once __DIR__ . '/notifications-helper.php';
 
 $dashboardHref = match ($_SESSION['role'] ?? '') {
     'freelancer' => 'dashboard.php',
@@ -79,7 +68,7 @@ $csrfToken = $_SESSION['csrf_token'];
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $service && !$isOwnService && !$dbError) {
     $submittedToken = $_POST['csrf_token'] ?? '';
     if (empty($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $submittedToken)) {
-        $formError = 'உங்கள் அமர்வு காலாவதியானது — மீண்டும் முயற்சிக்கவும்.';
+        $formError = 'Your session expired — please try again.';
     } else {
         $bookingDate = trim($_POST['booking_date'] ?? '');
         $today = date('Y-m-d');
@@ -100,6 +89,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $service && !$isOwnService && !$dbE
         } elseif (in_array($bookingDate, $bookedDates, true)) {
             $formError = 'This freelancer already has a confirmed booking on that date. Please pick another date.';
         } else {
+            // ---- Duplicate-booking check: same client already booked this exact service ----
+            $dupStmt = $pdo->prepare("
+                SELECT booking_id FROM bookings
+                WHERE service_id = :service_id
+                  AND client_id = :client_id
+                  AND status IN ('pending', 'confirmed')
+                LIMIT 1
+            ");
+            $dupStmt->execute([
+                'service_id' => $service['service_id'],
+                'client_id'  => $_SESSION['user_id'],
+            ]);
+            $existingBooking = $dupStmt->fetch();
+
+            if ($existingBooking) {
+                $formError = 'You already have an active booking with this freelancer for this service.';
+            } else {
             try {
                 $insert = $pdo->prepare("
                     INSERT INTO bookings (service_id, client_id, booking_date, latitude, longitude, status)
@@ -114,22 +120,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $service && !$isOwnService && !$dbE
                 ]);
                 $bookingId = (int) $pdo->lastInsertId();
 
+                // Freelancer ku — new booking request vandhadhu (TC-NOTIF-02)
+                create_notification(
+                    $pdo,
+                    (int) $service['freelancer_user_id'],
+                    'new_booking_request',
+                    'New booking request for "' . $service['title'] . '" from ' . $_SESSION['full_name'] . '.',
+                    $bookingId
+                );
+
+                // Client ku — avanga edhu book pannirukanga nu confirmation
+                create_notification(
+                    $pdo,
+                    (int) $_SESSION['user_id'],
+                    'booking_submitted',
+                    'You booked "' . $service['title'] . '" with ' . $service['freelancer_name'] . ' for ' . $bookingDate . '. Complete payment to confirm it.',
+                    $bookingId
+                );
+
                 header('Location: payment.php?booking=' . $bookingId);
                 exit;
             } catch (PDOException $e) {
-                error_log('SkillBridge booking.php insert error: ' . $e->getMessage());
-                $formError = 'Something went wrong creating your booking. Please try again.';
+    error_log('SkillBridge booking.php insert error: ' . $e->getMessage());
+    if ($e->getCode() === '23000') {
+        $formError = 'You already have an active booking with this freelancer for this service.';
+    } else {
+        $formError = 'Something went wrong creating your booking. Please try again.';
+    }
+}
             }
         }
     }
 }
+
 ?>
 <!DOCTYPE html>
-<html lang="ta">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ஒரு சேவையை முன்பதிவு செய்யுங்கள் — SkillBridge.lk</title>
+<title>Book a Service — SkillBridge.lk</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -148,11 +178,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $service && !$isOwnService && !$dbE
 
 <header class="nav">
   <div class="nav-inner">
-    <a href="index(TAM).html" class="brand-mark">Skill<span class="brand-accent">Bridge</span><span class="brand-tld">.lk</span></a>
+    <a href="index(ENG).html" class="brand-mark">Skill<span class="brand-accent">Bridge</span><span class="brand-tld">.lk</span></a>
     <nav class="nav-links">
-      <a href="<?php echo $dashboardHref; ?>">டாஷ்போர்டு</a>
+      <a href="<?php echo $dashboardHref; ?>">Dashboard</a>
     </nav>
-    <span class="nav-hello">வணக்கம், <?php echo htmlspecialchars(explode(' ', $_SESSION['full_name'])[0], ENT_QUOTES); ?></span>
+    <span class="nav-hello">Hi, <?php echo htmlspecialchars(explode(' ', $_SESSION['full_name'])[0], ENT_QUOTES); ?></span>
   </div>
 </header>
 
@@ -161,8 +191,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $service && !$isOwnService && !$dbE
   <?php if ($dbError): ?>
     <div class="empty-state">
       <div class="empty-glyph">!</div>
-      <h3>இந்த சேவையை ஏற்ற முடியவில்லை</h3>
-      <p>தரவுத்தளத்தை அணுகுவதில் ஏதோ தவறு நடந்தது. சிறிது நேரத்தில் மீண்டும் முயற்சிக்கவும்.</p>
+      <h3>Couldn't load this service</h3>
+      <p>Something went wrong reaching the database. Please try again shortly.</p>
       <?php if (isset($_GET['debug'])): ?>
         <p class="debug-detail"><?php echo htmlspecialchars($dbErrorDetail, ENT_QUOTES); ?></p>
       <?php endif; ?>
@@ -171,23 +201,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $service && !$isOwnService && !$dbE
   <?php elseif (!$service): ?>
     <div class="empty-state">
       <div class="empty-glyph">◎</div>
-      <h3>சேவை கிடைக்கவில்லை</h3>
-      <p>இந்த பட்டியல் நீக்கப்பட்டிருக்கலாம்.</p>
-      <a href="search.php" class="btn btn-outline">தேடலுக்குத் திரும்பு</a>
+      <h3>Service not found</h3>
+      <p>This listing may have been removed.</p>
+      <a href="search.php" class="btn btn-outline">Back to Search</a>
     </div>
 
   <?php elseif ($isOwnService): ?>
     <div class="empty-state">
       <div class="empty-glyph">i</div>
-      <h3>இது உங்கள் சொந்த பட்டியல்</h3>
-      <p>நீங்களே வழங்கும் சேவையை நீங்கள் முன்பதிவு செய்ய முடியாது.</p>
-      <a href="search.php" class="btn btn-outline">தேடலுக்குத் திரும்பு</a>
+      <h3>That's your own listing</h3>
+      <p>You can't book a service you offer yourself.</p>
+      <a href="search.php" class="btn btn-outline">Back to Search</a>
     </div>
 
   <?php else: ?>
 
-    <p class="eyebrow">உங்கள் முன்பதிவை உறுதிப்படுத்தவும்</p>
-    <h1 class="flow-title">இந்த சேவையை முன்பதிவு செய்யுங்கள்</h1>
+    <p class="eyebrow">Confirm Your Booking</p>
+    <h1 class="flow-title">Book This Service</h1>
 
     <div class="flow-grid">
 
@@ -200,7 +230,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $service && !$isOwnService && !$dbE
           <p class="summary-desc"><?php echo htmlspecialchars($service['description'], ENT_QUOTES); ?></p>
         <?php endif; ?>
         <div class="summary-price-row">
-          <span>விலை</span>
+          <span>Price</span>
           <span class="summary-price">LKR <?php echo number_format((float) $service['price'], 0); ?></span>
         </div>
       </aside>
@@ -215,35 +245,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $service && !$isOwnService && !$dbE
           <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES); ?>">
 
           <div class="field">
-            <label for="bookingDate">விருப்பமான தேதி</label>
+            <label for="bookingDate">Preferred Date</label>
             <input type="date" id="bookingDate" name="booking_date" min="<?php echo date('Y-m-d'); ?>" value="<?php echo htmlspecialchars($_POST['booking_date'] ?? '', ENT_QUOTES); ?>" required>
-            <p id="bookingDateStatus" class="flow-error" hidden>இந்த ஃப்ரீலான்சருக்கு அந்த தேதியில் ஏற்கனவே உறுதிசெய்யப்பட்ட முன்பதிவு உள்ளது — வேறு தேதியைத் தேர்ந்தெடுக்கவும்.</p>
+            <p id="bookingDateStatus" class="flow-error" hidden>This freelancer already has a confirmed booking on that date — please pick another date.</p>
           </div>
 
           <div class="field">
-            <label>உங்கள் இருப்பிடம் <span class="field-hint">— விருப்பத்தேர்வு, ஆனால் இது உதவும் <?php echo htmlspecialchars($service['freelancer_name'], ENT_QUOTES); ?> இந்த வேலைக்காக உங்களைக் கண்டறிய</span></label>
+            <label>Your Location <span class="field-hint">— optional, but it helps <?php echo htmlspecialchars($service['freelancer_name'], ENT_QUOTES); ?> find you for this job</span></label>
 
             <div class="location-picker">
               <div class="location-search-row">
-                <input type="text" id="locationSearchBox" placeholder="ஒரு முகவரி அல்லது பகுதியைத் தட்டச்சு செய்யவும், எ.கா. கண்டி, இலங்கை">
-                <button type="button" id="locationSearchBtn" class="btn btn-outline btn-sm">தேடு</button>
-                <button type="button" id="useMyLocationBtn" class="btn btn-outline btn-sm">📍 எனது இருப்பிடத்தைப் பயன்படுத்து</button>
+                <input type="text" id="locationSearchBox" placeholder="Type an address or area, e.g. Kandy, Sri Lanka">
+                <button type="button" id="locationSearchBtn" class="btn btn-outline btn-sm">Find</button>
+                <button type="button" id="useMyLocationBtn" class="btn btn-outline btn-sm">📍 Use My Location</button>
               </div>
 
-              <div id="locationMap" class="location-map" role="group" aria-label="உங்கள் இருப்பிடத்தை அமைக்க வரைபடத்தை கிளிக் செய்யவும்"></div>
+              <div id="locationMap" class="location-map" role="group" aria-label="Click the map to set your location"></div>
 
-              <p id="locationStatus" class="location-status">இதுவரை இருப்பிடம் அமைக்கப்படவில்லை. வரைபடத்தைக் கிளிக் செய்யவும், முகவரியைத் தேடவும், அல்லது உங்கள் தற்போதைய இருப்பிடத்தைப் பயன்படுத்தவும்.</p>
+              <p id="locationStatus" class="location-status">No location set yet. Click the map, search an address, or use your current location.</p>
 
-              <button type="button" id="clearLocationBtn" class="btn btn-ghost btn-sm">இருப்பிடத்தை அழி</button>
+              <button type="button" id="clearLocationBtn" class="btn btn-ghost btn-sm">Clear location</button>
             </div>
 
             <input type="hidden" id="latitude" name="latitude" value="<?php echo htmlspecialchars($_POST['latitude'] ?? '', ENT_QUOTES); ?>">
             <input type="hidden" id="longitude" name="longitude" value="<?php echo htmlspecialchars($_POST['longitude'] ?? '', ENT_QUOTES); ?>">
           </div>
 
-          <p class="flow-note">அடுத்த படியில் நீங்கள் கட்டணத்தை உறுதிசெய்வீர்கள். கட்டணம் முடிந்தவுடன் ஃப்ரீலான்சருக்குத் தெரிவிக்கப்படும்.</p>
+          <p class="flow-note">You'll confirm payment on the next step. The freelancer will be notified once payment is complete.</p>
 
-          <button type="submit" class="btn btn-primary btn-lg btn-block">கட்டணத்திற்கு தொடரவும்</button>
+          <button type="submit" class="btn btn-primary btn-lg btn-block">Continue to Payment</button>
         </form>
       </section>
 

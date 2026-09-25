@@ -1,13 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — Add/Edit Service (English)
- * ---------------------------------------------------------------------
- * No ?service= param -> blank form (create new).
- * ?service=<id>      -> pre-filled form (edit), ownership verified.
- * Saves directly (no separate -process.php — keeps create/edit in one
- * place since they share every field).
- * ---------------------------------------------------------------------
- */
 require_once __DIR__ . '/session.php';
 require_login('freelancer');
 

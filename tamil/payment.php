@@ -1,21 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — Payment (English)
- * ---------------------------------------------------------------------
- * Reached from booking.php after a pending booking is created. Builds
- * a PayHere hosted-checkout form (PayHere collects the card details on
- * their own page — we never see or store card numbers) and submits it
- * to PAYHERE_CHECKOUT_URL. PayHere confirms payment by POSTing to
- * payhere-notify.php from their own server; see config/payhere.php for
- * why that needs a public URL (ngrok) during local development.
- *
- * A "Pay with Demo Gateway (Sandbox)" link is shown ONLY while
- * PAYHERE_SANDBOX is true, for developing without a tunnel — it opens
- * demo-payment.php, a fake card + OTP checkout screen, which then
- * posts to payment-process.php to simulate a completed payment the
- * same way the notify webhook would.
- * ---------------------------------------------------------------------
- */
 require_once __DIR__ . '/session.php';
 require_login();
 require_once __DIR__ . '/../config/payhere.php';

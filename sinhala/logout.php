@@ -1,12 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — Logout (English)
- * ---------------------------------------------------------------------
- * Clears the session (login state) but leaves the language cookie
- * alone, so the visitor stays on English after logging out instead of
- * being sent back to the language picker.
- * ---------------------------------------------------------------------
- */
 session_start();
 
 $_SESSION = [];

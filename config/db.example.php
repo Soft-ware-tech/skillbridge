@@ -1,20 +1,4 @@
 <?php
-/**
- * COPY THIS FILE to db.php and fill in your real credentials.
- * db.php itself is gitignored so real credentials never get pushed.
- * ---------------------------------------------------------------------
- * SkillBridge.lk — Shared Database Connection
- * ---------------------------------------------------------------------
- * ONE database ("gpss_database") serves all three language folders.
- * Every PHP page in /tamil, /english, /sinhala includes this same file:
- *
- *      require_once __DIR__ . '/../config/db.php';
- *
- * $pdo is then ready to use in that page. Only the UI text differs per
- * language folder — the data and the connection are identical.
- * ---------------------------------------------------------------------
- */
-
 // ---- Connection settings -------------------------------------------------
 // Move these into environment variables before deploying to production.
 define('DB_HOST', 'localhost');            // TODO: your DB host

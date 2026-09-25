@@ -1,9 +1,7 @@
 <?php
-/**
- * SkillBridge.lk — Stripe configuration (test/sandbox)
- */
-'secret_key' => getenv('STRIPE_SECRET_KEY') ?: '',
-define('STRIPE_PUBLISHABLE_KEY', getenv('STRIPE_PUBLISHABLE_KEY') ?: 'your-publishable-key-here');
+
+define('STRIPE_SECRET_KEY', 'YOUR_STRIPE_SECRET_KEY');
+define('STRIPE_PUBLISHABLE_KEY', 'YOUR_STRIPE_PUBLISHABLE_KEY');
 define('STRIPE_CURRENCY', 'lkr'); // Stripe accepts LKR for checkout
 
 function stripe_base_url(): string

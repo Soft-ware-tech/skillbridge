@@ -1,19 +1,7 @@
 <?php
-/**
- * SkillBridge.lk — PayHere notify webhook (English)
- * ---------------------------------------------------------------------
- * PayHere's OWN SERVER calls this URL directly after a payment attempt
- * — never the customer's browser. This is the only place a payment
- * should be trusted as real; the customer-facing return_url
- * (payhere-return.php) is just a friendly redirect and must never mark
- * a booking as paid by itself, since a browser redirect can be faked.
- *
- * No session exists on this request (PayHere doesn't send cookies), so
- * we connect to the DB directly instead of going through session.php.
- * ---------------------------------------------------------------------
- */
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../config/payhere.php';
+require_once __DIR__ . '/notifications-helper.php';
 
 header('Content-Type: text/plain');
 
@@ -56,7 +44,7 @@ try {
 
     if (!$booking) {
         http_response_code(404);
-        exit('முன்பதிவு கிடைக்கவில்லை');
+        exit('Booking not found');
     }
 
     // Idempotent — PayHere may retry the notify call; don't double-insert.
@@ -88,8 +76,100 @@ try {
     ]);
 
     $bookingStatus = $paymentStatus === 'completed' ? 'confirmed' : 'payment_failed';
+
+    // ---- Concurrency guard (TC-NFR-04) ----
+    // Two clients can race to confirm the same freelancer+date. Instead
+    // of trusting an earlier "is this date free?" check (which can go
+    // stale between two near-simultaneous payments), we let MySQL's
+    // UNIQUE constraint on confirmed_slots be the single source of
+    // truth: only the payment that inserts FIRST wins the slot.
+    if ($bookingStatus === 'confirmed') {
+        $freelancerStmt = $pdo->prepare("
+            SELECT u.user_id AS freelancer_id
+            FROM bookings b
+            JOIN services s ON b.service_id = s.service_id
+            JOIN freelancer_profiles fp ON s.profile_id = fp.profile_id
+            JOIN users u ON fp.user_id = u.user_id
+            WHERE b.booking_id = :booking_id
+            LIMIT 1
+        ");
+        $freelancerStmt->execute(['booking_id' => $bookingId]);
+        $freelancerRow = $freelancerStmt->fetch();
+        $freelancerId = $freelancerRow ? (int) $freelancerRow['freelancer_id'] : null;
+
+        $slotWon = false;
+        if ($freelancerId !== null) {
+            try {
+                $lockSlot = $pdo->prepare("
+                    INSERT INTO confirmed_slots (freelancer_id, booking_date, booking_id)
+                    SELECT :freelancer_id, b.booking_date, b.booking_id
+                    FROM bookings b WHERE b.booking_id = :booking_id
+                ");
+                $lockSlot->execute(['freelancer_id' => $freelancerId, 'booking_id' => $bookingId]);
+                $slotWon = true;
+            } catch (PDOException $e) {
+                // SQLSTATE 23000 = duplicate key — someone else's payment
+                // already grabbed this freelancer+date first.
+                if ($e->getCode() !== '23000') {
+                    throw $e;
+                }
+                $slotWon = false;
+            }
+        }
+
+        if (!$slotWon) {
+            $bookingStatus = 'conflict';
+        }
+    }
+
     $updateBooking = $pdo->prepare('UPDATE bookings SET status = :status WHERE booking_id = :booking_id');
     $updateBooking->execute(['status' => $bookingStatus, 'booking_id' => $bookingId]);
+
+    // ---- Notify client once the booking is actually confirmed ----
+    // (Freelancer already got their "new booking request" notification
+    // back in booking.php the moment the booking was created — see
+    // TC-NOTIF-02. This is just the client-facing confirmation.)
+    if ($bookingStatus === 'confirmed') {
+        $infoStmt = $pdo->prepare("
+            SELECT b.client_id, s.title
+            FROM bookings b
+            JOIN services s ON b.service_id = s.service_id
+            WHERE b.booking_id = :booking_id
+            LIMIT 1
+        ");
+        $infoStmt->execute(['booking_id' => $bookingId]);
+        $info = $infoStmt->fetch();
+
+        if ($info) {
+            // TC-NOTIF-01 — Client receives notification on booking confirmation
+            create_notification(
+                $pdo,
+                (int) $info['client_id'],
+                'booking_confirmed',
+                'Your booking for "' . $info['title'] . '" has been confirmed.',
+                $bookingId
+            );
+        }
+    } elseif ($bookingStatus === 'conflict') {
+        // TC-NFR-04 — the losing side of the race is flagged, not silently
+        // dropped, and the client is told to seek a refund since PayHere
+        // already charged them for a slot that's no longer available.
+        $clientStmt = $pdo->prepare('SELECT client_id FROM bookings WHERE booking_id = :booking_id');
+        $clientStmt->execute(['booking_id' => $bookingId]);
+        $clientRow = $clientStmt->fetch();
+
+        if ($clientRow) {
+            create_notification(
+                $pdo,
+                (int) $clientRow['client_id'],
+                'booking_conflict',
+                'This slot was just booked by someone else. Your payment will be refunded — contact support if you don\'t see it reversed shortly.',
+                $bookingId
+            );
+        }
+
+        error_log('SkillBridge payhere-notify.php: booking ' . $bookingId . ' lost slot race, flagged as conflict');
+    }
 
     $pdo->commit();
 

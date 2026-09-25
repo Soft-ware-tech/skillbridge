@@ -1,11 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — Booking Confirmation (English)
- * ---------------------------------------------------------------------
- * Landed on after payment-process.php completes. Confirms the booking
- * for the client and links onward to messaging the freelancer.
- * ---------------------------------------------------------------------
- */
 require_once __DIR__ . '/session.php';
 require_login();
 

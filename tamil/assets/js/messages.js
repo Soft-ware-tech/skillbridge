@@ -1,9 +1,3 @@
-/* ==========================================================================
-   SkillBridge.lk -- Messages page interactions
-   Sends messages via AJAX (instant on your own screen, no page reload) and
-   polls every few seconds so the other person's replies — and their
-   online / last-seen status — appear without refreshing.
-   ========================================================================== */
 (function () {
   "use strict";
 

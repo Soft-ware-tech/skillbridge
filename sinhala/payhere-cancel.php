@@ -1,12 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — PayHere cancel URL (English)
- * ---------------------------------------------------------------------
- * The customer's browser lands here if they cancel out of PayHere's
- * checkout page. The booking stays 'pending' — they can retry payment
- * from here.
- * ---------------------------------------------------------------------
- */
 require_once __DIR__ . '/session.php';
 require_login();
 

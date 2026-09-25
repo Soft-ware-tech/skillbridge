@@ -1,11 +1,3 @@
-/* ==========================================================================
-   SkillBridge.lk — Language notification interactions
-   - Subtle 3D tilt on the glass language cards (mouse-follow)
-   - Quick "selected" transition before the link navigates away
-   - Each card is a plain <a> with its own hardcoded href — no server-side
-     path lookup involved, so the destination is always exactly what's in
-     the markup: tamil/index(TAM).html, english/index(ENG).html, etc.
-   ========================================================================== */
 (function () {
   "use strict";
 

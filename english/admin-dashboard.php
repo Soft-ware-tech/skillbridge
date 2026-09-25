@@ -1,18 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — Admin Dashboard (English)
- * ---------------------------------------------------------------------
- * Overview for a logged-in admin: platform-wide stats and a preview of
- * freelancers waiting on verification. Full verification queue lives
- * in admin-verifications.php, full user list in admin-users.php.
- *
- * Admin accounts aren't self-registered (login.php's role toggle only
- * offers client/freelancer) — create one directly in the database:
- *   INSERT INTO users (full_name, email, password_hash, role, language_pref)
- *   VALUES ('Admin Name', 'admin@skillbridge.lk',
- *           '<password_hash() output>', 'admin', 'english');
- * ---------------------------------------------------------------------
- */
 require_once __DIR__ . '/session.php';
 require_login('admin');
 

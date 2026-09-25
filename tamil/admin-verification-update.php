@@ -1,10 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — /tamil/admin-verification-update.php
- * ---------------------------------------------------------------------
- * Sets verified_badge = 1 on a freelancer profile. Admin-only.
- * ---------------------------------------------------------------------
- */
 require_once __DIR__ . '/session.php';
 require_login('admin');
 

@@ -1,13 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — Client Dashboard (English)
- * ---------------------------------------------------------------------
- * Every booking this client has made, with its status, and a "Leave a
- * Review" form for completed bookings that don't have one yet (uses a
- * plain <details> disclosure — no JS needed). Submissions post to
- * review-process.php.
- * ---------------------------------------------------------------------
- */
 require_once __DIR__ . '/session.php';
 require_login('client');
 

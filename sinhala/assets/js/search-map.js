@@ -1,15 +1,3 @@
-/* ==========================================================================
-   SkillBridge.lk -- Search page: "ආසන්නයේ" geolocation + results map toggle
-   Leaflet.js + OpenStreetMap tiles (free, no API key). Two independent
-   features:
-     1. "මා අසල සොයන්න" -- browser Geolocation API (always free, nothing
-        to do with any map provider), then reload the page with
-        ?lat=..&lng=.. so distance sorting/filtering (done server-side in
-        search.php, plain SQL) kicks in.
-     2. Map View -- plots every result that has a saved location as a
-        pin, using the JSON search.php embedded in #resultsMapData.
-   ========================================================================== */
-
 var skillbridgeResultsMap = null;
 
 var DARK_TILE_URL_SEARCH = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";

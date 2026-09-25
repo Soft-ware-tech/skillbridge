@@ -1,22 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — Login / Register (English)
- * ---------------------------------------------------------------------
- * One page, two modes. ?mode=register shows the sign-up form; the
- * default (no query, or ?mode=login) shows the login form. Both are
- * just the centered form card — the toggle link switches modes
- * client-side without a reload.
- *
- * register.php is a one-line redirect into this file with
- * ?mode=register, so both URLs used elsewhere on the site
- * (login.php / register.php) keep working.
- *
- * The form posts to register-process.php or login-process.php
- * (auth.js swaps the form's `action` when the mode toggles). Both
- * process files require_once session.php for $pdo + session access,
- * then redirect back here with ?error=... if something goes wrong.
- * ---------------------------------------------------------------------
- */
 session_start();
 
 $initialMode = (($_GET['mode'] ?? '') === 'register') ? 'register' : 'login';

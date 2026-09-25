@@ -1,11 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — My Bookings (Freelancer, English)
- * ---------------------------------------------------------------------
- * Every booking made against any of this freelancer's services.
- * Status actions post to booking-status-update.php.
- * ---------------------------------------------------------------------
- */
 require_once __DIR__ . '/session.php';
 require_login('freelancer');
 

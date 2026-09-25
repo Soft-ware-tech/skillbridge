@@ -1,14 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — /sinhala/service-delete.php
- * ---------------------------------------------------------------------
- * Soft-deletes a service (is_active = 0) rather than a hard DELETE, so
- * existing bookings/reviews tied to it stay intact and historically
- * correct. Ownership is re-checked here even though the delete button
- * only appears on the owner's own services.php list — never trust the
- * client alone for a destructive action.
- * ---------------------------------------------------------------------
- */
 require_once __DIR__ . '/session.php';
 require_login('freelancer');
 
@@ -27,6 +17,24 @@ $serviceId = (int) ($_POST['service_id'] ?? 0);
 $myId = (int) $_SESSION['user_id'];
 
 try {
+    // Block the delete if this service (still owned by the requester)
+    // has a booking that's pending or confirmed.
+    $checkStmt = $pdo->prepare("
+        SELECT COUNT(*) FROM bookings b
+        JOIN services s ON b.service_id = s.service_id
+        JOIN freelancer_profiles fp ON s.profile_id = fp.profile_id
+        WHERE s.service_id = :service_id
+          AND fp.user_id = :user_id
+          AND b.status IN ('pending', 'confirmed')
+    ");
+    $checkStmt->execute(['service_id' => $serviceId, 'user_id' => $myId]);
+    $activeBookings = (int) $checkStmt->fetchColumn();
+
+    if ($activeBookings > 0) {
+        header('Location: services.php?error=has_active_booking');
+        exit;
+    }
+
     $stmt = $pdo->prepare("
         UPDATE services s
         JOIN freelancer_profiles fp ON s.profile_id = fp.profile_id

@@ -1,9 +1,3 @@
-/* ==========================================================================
-   SkillBridge.lk -- Login / Register interactions
-   - Toggle between login/register without a page reload (smooth swap)
-   - Register-only name fields fade/collapse when switching to login
-   - Password show/hide
-   ========================================================================== */
 (function () {
   "use strict";
 

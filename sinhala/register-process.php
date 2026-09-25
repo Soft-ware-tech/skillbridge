@@ -1,14 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — /sinhala/register-process.php
- * ---------------------------------------------------------------------
- * Handles the Sign Up form POST from login.php (register mode).
- * On any failure, redirects back to login.php?mode=register&error=<code>
- * so the page can show a plain-language message (see $errorMessages in
- * login.php). On success, creates the user (and a freelancer_profiles
- * row if role=freelancer), logs them in, and redirects onward.
- * ---------------------------------------------------------------------
- */
 require_once __DIR__ . '/session.php'; // gives us session_start() + $pdo
 
 function back_with_error(string $code): void

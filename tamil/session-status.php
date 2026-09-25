@@ -1,25 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — /tamil/session-status.php
- * ---------------------------------------------------------------------
- * index(TAM).html is a plain static file, so it can never read
- * $_SESSION directly — that's why the landing page nav always showed
- * "Log In / Join Free", even to someone who was already logged in.
- *
- * This tiny endpoint is what the landing page's JS calls on load to
- * find out. Plain text, not JSON (keeping this project's PHP simple):
- *
- *   loggedIn|First Name|role|photo_path
- *
- * loggedIn is "1" or "0". The rest are empty when loggedIn is "0".
- * role is one of client/freelancer/admin — the landing page uses it to
- * point the Dashboard link at the right file, since each role has its
- * own dashboard (dashboard.php / client-dashboard.php /
- * admin-dashboard.php). photo_path is empty when the user hasn't
- * uploaded a profile photo yet, in which case the nav falls back to
- * an initial-letter avatar.
- * ---------------------------------------------------------------------
- */
 require_once __DIR__ . '/session.php';
 
 header('Content-Type: text/plain; charset=utf-8');

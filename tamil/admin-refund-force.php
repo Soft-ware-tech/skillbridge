@@ -1,8 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — Admin force-processes an overdue refund.
- * Same Stripe refund logic as refund-decision.php, but admin-initiated.
- */
 require_once __DIR__ . '/session.php';
 require_login('admin');
 require_once __DIR__ . '/../config/stripe.php';

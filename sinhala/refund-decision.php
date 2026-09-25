@@ -1,9 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — Freelancer approves/rejects a refund request.
- * Approve = live Stripe refund on the original payment_intent, then
- * notifies the client (refund done) and admin (for records).
- */
 require_once __DIR__ . '/session.php';
 require_login('freelancer');
 require_once __DIR__ . '/../config/stripe.php';

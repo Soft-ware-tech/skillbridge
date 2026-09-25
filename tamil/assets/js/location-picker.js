@@ -1,30 +1,3 @@
-/* ==========================================================================
-   SkillBridge.lk -- Freelancer location picker (profile-edit.php)
-   Leaflet.js + OpenStreetMap tiles -- completely free, no API key, no
-   billing account. (We used to use Google Maps here; switched to keep
-   this feature free to run.)
-
-   Wires up:
-     - A draggable pin the freelancer can also place by clicking the map
-     - An address search box (OSM's free Nominatim geocoder) that drops
-       the pin
-     - A "Use My Location" button (browser Geolocation API -- this was
-       always free, nothing to do with Google)
-     - A "இருப்பிடத்தை அழி" button
-
-   Whatever coordinate the pin ends up at is written into the hidden
-   #latitude / #longitude inputs, which is what profile-edit.php actually
-   saves on submit -- the map itself never talks to the server directly.
-
-   Nominatim usage note: it's a shared free service, so we keep requests
-   light on purpose -- only geocode on "தேடு"/Enter (never as-you-type),
-   and only one request per click. That's well inside their fair-use
-   limit (max ~1 request/second) for a project this size. See
-   https://operations.osmfoundation.org/policies/nominatim/ if this ever
-   needs to scale up -- at that point, self-hosting Nominatim or a paid
-   geocoder would be the right move, not hammering the free one.
-   ========================================================================== */
-
 var skillbridgeMap = null;
 var skillbridgeMarker = null;
 

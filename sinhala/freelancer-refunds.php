@@ -1,7 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — Freelancer's Refund Requests Inbox (English)
- */
 require_once __DIR__ . '/session.php';
 require_login('freelancer');
 

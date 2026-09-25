@@ -1,8 +1,3 @@
-/* ==========================================================================
-   SkillBridge.lk — Dashboard nav (hamburger toggle)
-   Loaded by partials/dashboard-nav.php, so this runs on every logged-in
-   page (dashboard, services, bookings, messages, admin-*, profile-edit).
-   ========================================================================== */
 (function () {
   var burger = document.getElementById("dashNavBurger");
   var links = document.getElementById("dashNavLinks");

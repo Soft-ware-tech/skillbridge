@@ -1,14 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — Post-Login Choice (English)
- * ---------------------------------------------------------------------
- * Landed on right after a fresh login/register with no specific task to
- * return to (login-process.php / register-process.php skip this and go
- * straight to the right place when the person was mid-task, e.g.
- * booking a service). Otherwise, they land here and choose where to go
- * — styled the same way the root language picker is, for consistency.
- * ---------------------------------------------------------------------
- */
 require_once __DIR__ . '/session.php';
 require_login();
 

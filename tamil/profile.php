@@ -1,14 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — Freelancer Profile (English)
- * ---------------------------------------------------------------------
- * Reached from search.php result cards via ?service=<service_id>, or
- * directly via ?profile=<profile_id>. Either way we resolve down to a
- * profile_id, then show that freelancer's full profile: bio, verified
- * badge, aggregate rating, every active service they list, and their
- * most recent reviews.
- * ---------------------------------------------------------------------
- */
 require_once __DIR__ . '/session.php'; // gives us session_start() + $pdo
 
 $dashboardHref = match ($_SESSION['role'] ?? '') {

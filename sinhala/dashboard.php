@@ -1,13 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — Freelancer Dashboard (English)
- * ---------------------------------------------------------------------
- * Overview page for a logged-in freelancer: profile summary, quick
- * stats, and their most recent bookings. Deeper management lives in
- * services.php (add/edit/delete listings) and bookings.php (full
- * booking list + status actions).
- * ---------------------------------------------------------------------
- */
 require_once __DIR__ . '/session.php';
 require_login('freelancer');
 

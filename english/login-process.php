@@ -1,12 +1,4 @@
 <?php
-/**
- * SkillBridge.lk — /english/login-process.php
- * ---------------------------------------------------------------------
- * Handles the Log In form POST from login.php (login mode). On any
- * failure, redirects back to login.php?error=invalid_login. On
- * success, starts the session and sends the visitor onward.
- * ---------------------------------------------------------------------
- */
 require_once __DIR__ . '/session.php'; // gives us session_start() + $pdo
 
 function back_with_error(string $code): void

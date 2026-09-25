@@ -1,10 +1,3 @@
-/* ==========================================================================
-   SkillBridge.lk -- Read-only freelancer location map (profile.php)
-   Leaflet.js + OpenStreetMap tiles -- free, no API key. Shows a single
-   pin at the freelancer's saved coordinates. No editing -- that only
-   happens on profile-edit.php's location picker.
-   ========================================================================== */
-
 var DARK_TILE_URL_PROFILE = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
 var DARK_TILE_ATTRIBUTION_PROFILE =
   '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors ' +

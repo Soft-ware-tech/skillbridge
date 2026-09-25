@@ -1,18 +1,7 @@
 <?php
-/**
- * SkillBridge.lk — Booking (English)
- * ---------------------------------------------------------------------
- * Reached from a "Book Now" button on profile.php via ?service=<id>.
- * Requires login — require_login() sends anonymous visitors to login.php
- * with a ?redirect= back to this exact URL, so they land right back
- * here after signing in.
- *
- * On submit: creates a `bookings` row with status='pending', then sends
- * the client on to payment.php to complete it.
- * ---------------------------------------------------------------------
- */
 require_once __DIR__ . '/session.php';
 require_login();
+require_once __DIR__ . '/notifications-helper.php';
 
 $dashboardHref = match ($_SESSION['role'] ?? '') {
     'freelancer' => 'dashboard.php',
@@ -100,6 +89,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $service && !$isOwnService && !$dbE
         } elseif (in_array($bookingDate, $bookedDates, true)) {
             $formError = 'This freelancer already has a confirmed booking on that date. Please pick another date.';
         } else {
+            // ---- Duplicate-booking check: same client already booked this exact service ----
+            $dupStmt = $pdo->prepare("
+                SELECT booking_id FROM bookings
+                WHERE service_id = :service_id
+                  AND client_id = :client_id
+                  AND status IN ('pending', 'confirmed')
+                LIMIT 1
+            ");
+            $dupStmt->execute([
+                'service_id' => $service['service_id'],
+                'client_id'  => $_SESSION['user_id'],
+            ]);
+            $existingBooking = $dupStmt->fetch();
+
+            if ($existingBooking) {
+                $formError = 'You already have an active booking with this freelancer for this service.';
+            } else {
             try {
                 $insert = $pdo->prepare("
                     INSERT INTO bookings (service_id, client_id, booking_date, latitude, longitude, status)
@@ -114,15 +120,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $service && !$isOwnService && !$dbE
                 ]);
                 $bookingId = (int) $pdo->lastInsertId();
 
+                // Freelancer ku — new booking request vandhadhu (TC-NOTIF-02)
+                create_notification(
+                    $pdo,
+                    (int) $service['freelancer_user_id'],
+                    'new_booking_request',
+                    'New booking request for "' . $service['title'] . '" from ' . $_SESSION['full_name'] . '.',
+                    $bookingId
+                );
+
+                // Client ku — avanga edhu book pannirukanga nu confirmation
+                create_notification(
+                    $pdo,
+                    (int) $_SESSION['user_id'],
+                    'booking_submitted',
+                    'You booked "' . $service['title'] . '" with ' . $service['freelancer_name'] . ' for ' . $bookingDate . '. Complete payment to confirm it.',
+                    $bookingId
+                );
+
                 header('Location: payment.php?booking=' . $bookingId);
                 exit;
             } catch (PDOException $e) {
-                error_log('SkillBridge booking.php insert error: ' . $e->getMessage());
-                $formError = 'Something went wrong creating your booking. Please try again.';
+    error_log('SkillBridge booking.php insert error: ' . $e->getMessage());
+    if ($e->getCode() === '23000') {
+        $formError = 'You already have an active booking with this freelancer for this service.';
+    } else {
+        $formError = 'Something went wrong creating your booking. Please try again.';
+    }
+}
             }
         }
     }
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
